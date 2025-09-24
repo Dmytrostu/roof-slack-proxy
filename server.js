@@ -8,7 +8,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Slack webhook URL
-const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+const SLACK_PAYMENT_WEBHOOK_URL = process.env.SLACK_PAYMENT_WEBHOOK_URL;
+const SLACK_ORDER_WEBHOOK_URL = process.env.SLACK_ORDER_WEBHOOK_URL;
 
 // Middleware
 app.use(cors()); // Enable CORS for all routes
@@ -34,7 +35,7 @@ app.post('/api/slack/notify', async (req, res) => {
         console.log('Received notification request:', message);
 
         // Send to Slack
-        const slackResponse = await fetch(SLACK_WEBHOOK_URL, {
+        const slackResponse = await fetch(SLACK_PAYMENT_WEBHOOK_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,19 +76,22 @@ app.post('/api/slack/order', async (req, res) => {
             });
         }
 
-        const message = `NEW ORDER RECEIVED - ${businessName}
+        const message = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 NEW ORDER RECEIVED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 Business: ${businessName}
 Email: ${email}
 Address: ${address}
 Service: Standard Roof Report - $12.00
-Status: Order Submitted - Awaiting Payment
 Time: ${new Date().toLocaleString()}
-Action: Customer needs to complete PayPal payment`;
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
         console.log('Sending order notification to Slack');
 
         // Send to Slack
-        const slackResponse = await fetch(SLACK_WEBHOOK_URL, {
+        const slackResponse = await fetch(SLACK_ORDER_WEBHOOK_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -142,7 +146,7 @@ Action Required: Generate and deliver roof measurement report to customer`;
         console.log('Sending payment notification to Slack');
 
         // Send to Slack
-        const slackResponse = await fetch(SLACK_WEBHOOK_URL, {
+        const slackResponse = await fetch(SLACK_PAYMENT_WEBHOOK_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
